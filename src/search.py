@@ -17,17 +17,94 @@ def suggest_word(word: str, index: dict) -> str | None:
         str | None: The closest match, or None if no good match found
 
     Time complexity:  O(v) where v = vocabulary size
-
     Space complexity: O(1)
     """
     matches = difflib.get_close_matches(word, index.keys(), n=1, cutoff=0.75)
     return matches[0] if matches else None
 
 
+def suggest_related_words(query_words: list[str], index: dict, top_n: int = 5) -> list[str]:
+    """
+    Suggests related words using pointwise mutual information (PMI) style
+    scoring. Words that co-occur with the query AND are specific to those
+    pages (not universal) score highest.
+
+    Score = (pages_with_word_on_matching / total_matching) 
+            / (total_pages_with_word / total_pages)
+
+    This rewards words that appear disproportionately often on matching
+    pages compared to the rest of the index — the core idea behind PMI.
+
+    Args:
+        query_words (list): The words already in the query
+        index (dict): The inverted index
+        top_n (int): Number of related words to return
+
+    Returns:
+        list: Top related words sorted by PMI-style score
+
+    Time complexity:  O(v * p) where v = vocabulary size,
+                      p = average pages per word
+    Space complexity: O(v) where v = vocabulary size
+    """
+    if not query_words:
+        return []
+
+    # Get pages matching ALL query words
+    matching_pages = None
+    for word in query_words:
+        if word not in index:
+            return []
+        pages = set(index[word].keys())
+        if matching_pages is None:
+            matching_pages = pages
+        else:
+            matching_pages = matching_pages & pages
+
+    if not matching_pages:
+        return []
+
+    total_matching = len(matching_pages)
+    total_pages = len(index[query_words[0]])  # approximate total pages
+
+    # Get a better total pages count from the largest word
+    total_pages = max(len(page_data) for page_data in index.values())
+
+    related_scores: dict[str, float] = {}
+
+    for word, page_data in index.items():
+        if word in query_words:
+            continue
+
+        # How many matching pages does this word appear on?
+        overlap = [url for url in matching_pages if url in page_data]
+        if not overlap:
+            continue
+
+        # P(word | matching pages) — how common is word on matching pages
+        p_word_given_match = len(overlap) / total_matching
+
+        # P(word) — how common is word across ALL pages
+        p_word = len(page_data) / total_pages
+
+        # PMI-style score: if word appears more on matching pages than
+        # expected by chance, it's genuinely related
+        if p_word > 0:
+            pmi_score = p_word_given_match / p_word
+            # Only suggest words that appear on at least 10% of matching pages
+            if p_word_given_match >= 0.2:
+                related_scores[word] = pmi_score
+
+    sorted_related = sorted(related_scores.items(), key=lambda x: x[1], reverse=True)
+    return [word for word, _ in sorted_related[:top_n]]
+
+
 def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
     """
     Finds all pages containing ALL words in the query.
     Results are ranked by combined TF-IDF score.
+    Suggests corrections for ALL misspelled words before returning.
+    Also displays related terms based on co-occurrence.
 
     Args:
         index (dict): The inverted index
@@ -38,7 +115,6 @@ def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
 
     Time complexity:  O(q * p) where q = number of query words,
                       p = average number of pages per word
-
     Space complexity: O(p) for storing matching URL sets
     """
     if not query or not query.strip():
@@ -51,17 +127,24 @@ def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
         print("No valid search terms found.")
         return []
 
-    # Get pages that contain ALL query words (AND logic)
-    matching_urls = None
-
+    # Check ALL words first and collect suggestions for any missing ones
+    missing = []
     for word in words:
         if word not in index:
             suggestion = suggest_word(word, index)
             if suggestion:
-                print(f"'{word}' not found in index. Did you mean '{suggestion}'?")
+                missing.append(f"'{word}' not found in index. Did you mean '{suggestion}'?")
             else:
-                print(f"'{word}' not found in index.")
-            return []
+                missing.append(f"'{word}' not found in index.")
+
+    if missing:
+        for msg in missing:
+            print(msg)
+        return []
+
+    # Get pages that contain ALL query words (AND logic)
+    matching_urls = None
+    for word in words:
         pages_with_word = set(index[word].keys())
         if matching_urls is None:
             matching_urls = pages_with_word
@@ -83,6 +166,12 @@ def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
         results.append((url, round(score, 6)))
 
     results.sort(key=lambda x: x[1], reverse=True)
+
+    # Show related word suggestions
+    related = suggest_related_words(words, index)
+    if related:
+        print(f"  Related terms: {', '.join(related)}")
+
     return results
 
 
