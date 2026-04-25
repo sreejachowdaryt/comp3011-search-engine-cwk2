@@ -230,7 +230,7 @@ Found 34 page(s):
 > 
 
 ### quit command
-> quit
+> quit                
 Goodbye!
 
 ---
@@ -309,7 +309,7 @@ Found 3 page(s):
 No pages found containing all search terms.
 > 
 
-This shows that there is no single page that contains all the 3 words therefore find
+This shows that there is no single page that contains all the 3 words using the AND logic therefore find returns "No page found contaning all search terms" but the words exits individually in the index. 
 
 --- 
 
@@ -393,7 +393,7 @@ This project was completed with the assistance of Claude (claude.ai) as part of 
 
 ### Critical Reflection
 - **Where it helped:** GenAI significantly sped up boilerplate code writing and helped explain unfamiliar library APIs. Understanding the TF-IDF concept was made much faster through AI explanation.
-- **Where it hindered:** The initial code provided by GenAI assumed a flat project structure and missed the `__init__.py` files needed for Python package imports — this caused a `ModuleNotFoundError` that required manual debugging and fixing.
+- **Where it hindered:** The initial code provided by GenAI as per the assessment brief assumed a flat project structure and missed the `__init__.py` files needed for Python package imports - this caused a `ModuleNotFoundError` that required manual debugging and fixing.
 - **Code quality:** Every line of AI-generated code was reviewed, tested, and understood before being included. The TF-IDF scoring logic was verified manually against the formula.
 - **Learning impact:** Using GenAI helped accelerate development but I was still required to debug, adapt, justify every design decision, and demonstrate full understanding of the implementation.
 

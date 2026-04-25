@@ -5,13 +5,18 @@ from bs4 import BeautifulSoup
 import time
 
 
-def crawl(base_url="https://quotes.toscrape.com/"):
+def crawl(base_url: str = "https://quotes.toscrape.com/") -> dict[str, str]:
     """
     Crawls all pages of the target website and returns their text content.
     Respects a 6-second politeness window between requests.
     
     Returns:
         dict: {url: text_content} for every page visited
+    
+    Time complexity:  O(p * l) where p = number of pages,
+                      l = average links per page
+                      
+    Space complexity: O(p) for storing visited pages and queue
     """
     visited = set()
     to_visit = [base_url]

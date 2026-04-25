@@ -9,16 +9,34 @@ from src.search import find_pages, print_index_entry
 INDEX_PATH = "data/index.json"
 
 
-def save_index(index):
-    """Saves the index to a JSON file."""
+def save_index(index: dict) -> None:
+    """
+    Saves the index to a JSON file.
+    
+    Args:
+        index (dict): The inverted index to save
+
+    Time complexity:  O(n) where n = total entries in index
+
+    Space complexity: O(1) additional space
+    """
     os.makedirs("data", exist_ok=True)
     with open(INDEX_PATH, "w", encoding="utf-8") as f:
         json.dump(index, f, indent=2)
     print(f"Index saved to {INDEX_PATH}")
 
 
-def load_index():
-    """Loads the index from a JSON file."""
+def load_index() -> dict | None:
+    """
+    Loads the index from a JSON file.
+    
+    Returns:
+        dict | None: The loaded index, or None if file not found
+
+    Time complexity:  O(n) where n = total entries in index
+
+    Space complexity: O(n) to load index into memory
+    """
     if not os.path.exists(INDEX_PATH):
         print("No index found. Please run 'build' first.")
         return None
@@ -28,7 +46,11 @@ def load_index():
     return index
 
 
-def main():
+def main() -> None:
+    """
+    Runs the interactive command-line search engine shell.
+    Accepts commands: build, load, print, find, quit.
+    """
     index = None
     print("Search Engine ready. Commands: build | load | print <word> | find <query> | quit")
     print("-" * 60)

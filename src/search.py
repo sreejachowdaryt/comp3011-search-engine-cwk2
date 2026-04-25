@@ -3,7 +3,7 @@
 from src.indexer import tokenize
 
 
-def find_pages(index, query):
+def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
     """
     Finds all pages containing ALL words in the query.
     Results are ranked by combined TF-IDF score.
@@ -14,6 +14,11 @@ def find_pages(index, query):
 
     Returns:
         list: Sorted list of (url, score) tuples, best match first
+
+    Time complexity:  O(q * p) where q = number of query words,
+                      p = average number of pages per word
+
+    Space complexity: O(p) for storing matching URL sets
     """
     if not query or not query.strip():
         print("Please enter a search term.")
@@ -56,13 +61,17 @@ def find_pages(index, query):
     return results
 
 
-def print_index_entry(index, word):
+def print_index_entry(index: dict, word: str) -> None:
     """
     Prints the inverted index entry for a given word.
 
     Args:
         index (dict): The inverted index
         word (str): The word to look up
+    
+    Time complexity:  O(p) where p = number of pages containing the word
+    
+    Space complexity: O(1) — prints directly, no additional storage
     """
     word = word.lower().strip()
 

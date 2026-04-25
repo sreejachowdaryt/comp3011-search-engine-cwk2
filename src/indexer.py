@@ -1,10 +1,11 @@
-# indexer.py - Builds the inverted index from crawled page
+# indexer.py - Builds the inverted index from crawled pages
 
 import re
+import math
 from collections import defaultdict
 
 
-def tokenize(text):
+def tokenize(text: str) -> list[str]:
     """
     Converts raw page text into a list of clean, lowercase tokens.
     Strips punctuation and normalises whitespace.
@@ -20,7 +21,7 @@ def tokenize(text):
     return words
 
 
-def build_index(pages):
+def build_index(pages: dict[str, str]) -> dict:
     """
     Builds an inverted index from a dictionary of crawled pages.
     
@@ -34,6 +35,12 @@ def build_index(pages):
     Returns:
         dict: Inverted index in the format:
               {word: {url: {frequency: int, positions: [int]}}}
+    
+    Time complexity:  O(n * w) where n = number of pages,
+                      w = average words per page
+
+    Space complexity: O(v * p) where v = vocabulary size,
+                      p = number of pages
     """
     index = defaultdict(dict)
 
@@ -53,7 +60,7 @@ def build_index(pages):
     return dict(index)
 
 
-def compute_tf_idf(index, pages):
+def compute_tf_idf(index: dict, pages: dict[str, str]) -> dict:
     """
     Adds TF-IDF score to each word/page entry in the index.
     Used to rank search results by relevance.
@@ -67,8 +74,12 @@ def compute_tf_idf(index, pages):
         
     Returns:
         dict: Index with tf_idf scores added to each entry
+    
+    Time complexity:  O(v * p) where v = vocabulary size,
+                      p = average pages per word
+
+    Space complexity: O(n) where n = number of pages, for word count cache
     """
-    import math
 
     total_pages = len(pages)
     page_word_counts = {}
