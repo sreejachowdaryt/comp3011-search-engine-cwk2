@@ -91,7 +91,7 @@ Note: this takes approximately 5 minutes due to the mandatory 6-second politenes
 Search Engine ready. Commands: build | load | print <word> | find <query> | quit               
 
 ### load commad
-> load 
+> load       
 Index loaded from data/index.json (4295 words)
 
 ### print command
@@ -99,75 +99,75 @@ Index loaded from data/index.json (4295 words)
 For single word print
 > print nonsense 
 
-Index entry for 'nonsense':
-  URL: https://quotes.toscrape.com/tag/life/page/1/
-    Frequency : 1
-    Positions : [490]
-    TF-IDF    : 0.006564
-  URL: https://quotes.toscrape.com/page/2/
-    Frequency : 1
-    Positions : [441]
-    TF-IDF    : 0.005294
-  URL: https://quotes.toscrape.com/tag/life/
-    Frequency : 1
-    Positions : [490]
-    TF-IDF    : 0.006564
-  URL: https://quotes.toscrape.com/tag/regrets/page/1/
-    Frequency : 1
-    Positions : [61]
-    TF-IDF    : 0.037583
-  URL: https://quotes.toscrape.com/tag/fantasy/page/1/
-    Frequency : 1
-    Positions : [12]
-    TF-IDF    : 0.06453
-  URL: https://quotes.toscrape.com/page/7/
-    Frequency : 1
-    Positions : [324]
-    TF-IDF    : 0.008124
+Index entry for 'nonsense':         
+  URL: https://quotes.toscrape.com/tag/life/page/1/         
+    Frequency : 1          
+    Positions : [490]          
+    TF-IDF    : 0.006564        
+  URL: https://quotes.toscrape.com/page/2/         
+    Frequency : 1            
+    Positions : [441]                    
+    TF-IDF    : 0.005294                      
+  URL: https://quotes.toscrape.com/tag/life/            
+    Frequency : 1                
+    Positions : [490]                    
+    TF-IDF    : 0.006564                    
+  URL: https://quotes.toscrape.com/tag/regrets/page/1/             
+    Frequency : 1           
+    Positions : [61]        
+    TF-IDF    : 0.037583         
+  URL: https://quotes.toscrape.com/tag/fantasy/page/1/       
+    Frequency : 1        
+    Positions : [12]         
+    TF-IDF    : 0.06453         
+  URL: https://quotes.toscrape.com/page/7/       
+    Frequency : 1        
+    Positions : [324]        
+    TF-IDF    : 0.008124          
 > 
 
 For multi-word print 
 > print nonsense crazy
 
 Index entry for 'nonsense':
-  URL: https://quotes.toscrape.com/tag/life/page/1/
-    Frequency : 1
-    Positions : [490]
-    TF-IDF    : 0.006564
-  URL: https://quotes.toscrape.com/page/2/
-    Frequency : 1
-    Positions : [441]
-    TF-IDF    : 0.005294
-  URL: https://quotes.toscrape.com/tag/life/
-    Frequency : 1
-    Positions : [490]
-    TF-IDF    : 0.006564
-  URL: https://quotes.toscrape.com/tag/regrets/page/1/
-    Frequency : 1
-    Positions : [61]
-    TF-IDF    : 0.037583
-  URL: https://quotes.toscrape.com/tag/fantasy/page/1/
-    Frequency : 1
-    Positions : [12]
-    TF-IDF    : 0.06453
-  URL: https://quotes.toscrape.com/page/7/
-    Frequency : 1
-    Positions : [324]
-    TF-IDF    : 0.008124
+  URL: https://quotes.toscrape.com/tag/life/page/1/       
+    Frequency : 1          
+    Positions : [490]        
+    TF-IDF    : 0.006564        
+  URL: https://quotes.toscrape.com/page/2/        
+    Frequency : 1        
+    Positions : [441]       
+    TF-IDF    : 0.005294             
+  URL: https://quotes.toscrape.com/tag/life/      
+    Frequency : 1          
+    Positions : [490]         
+    TF-IDF    : 0.006564          
+  URL: https://quotes.toscrape.com/tag/regrets/page/1/        
+    Frequency : 1         
+    Positions : [61]         
+    TF-IDF    : 0.037583         
+  URL: https://quotes.toscrape.com/tag/fantasy/page/1/        
+    Frequency : 1           
+    Positions : [12]            
+    TF-IDF    : 0.06453                    
+  URL: https://quotes.toscrape.com/page/7/             
+    Frequency : 1                
+    Positions : [324]              
+    TF-IDF    : 0.008124               
 
 Index entry for 'crazy':
-  URL: https://quotes.toscrape.com/tag/humor/page/1/
-    Frequency : 1
-    Positions : [172]
-    TF-IDF    : 0.01331
-  URL: https://quotes.toscrape.com/tag/humor/
-    Frequency : 1
-    Positions : [172]
-    TF-IDF    : 0.01331
-  URL: https://quotes.toscrape.com/page/8/
-    Frequency : 1
-    Positions : [37]
-    TF-IDF    : 0.012283
+  URL: https://quotes.toscrape.com/tag/humor/page/1/         
+    Frequency : 1        
+    Positions : [172]           
+    TF-IDF    : 0.01331         
+  URL: https://quotes.toscrape.com/tag/humor/            
+    Frequency : 1          
+    Positions : [172]            
+    TF-IDF    : 0.01331           
+  URL: https://quotes.toscrape.com/page/8/               
+    Frequency : 1           
+    Positions : [37]              
+    TF-IDF    : 0.012283          
 > 
 
 ### find command
@@ -377,3 +377,31 @@ The crawler observes a mandatory **6-second delay** between every HTTP request, 
 
 ---
 
+## Gen AI Declaration 
+This project was completed with the assistance of Claude (claude.ai) as part of a Green Category assessment where GenAI use is permitted and encouraged.
+
+### Tools Used
+- **Claude (claude.ai)** — Used throughout the development process
+
+### How GenAI Was Used
+- Explaining Python libraries (BeautifulSoup API, requests, unittest.mock)
+- Suggesting project structure and file organisation
+- Writing boilerplate code for crawler, indexer, search, and CLI modules
+- Helping design the test suite structure and suggesting edge cases to cover
+- Debugging module import errors (missing `__init__.py` files)
+- Explaining concepts such as inverted indices and TF-IDF scoring
+
+### Critical Reflection
+- **Where it helped:** GenAI significantly sped up boilerplate code writing and helped explain unfamiliar library APIs. Understanding the TF-IDF concept was made much faster through AI explanation.
+- **Where it hindered:** The initial code provided by GenAI assumed a flat project structure and missed the `__init__.py` files needed for Python package imports — this caused a `ModuleNotFoundError` that required manual debugging and fixing.
+- **Code quality:** Every line of AI-generated code was reviewed, tested, and understood before being included. The TF-IDF scoring logic was verified manually against the formula.
+- **Learning impact:** Using GenAI helped accelerate development but I was still required to debug, adapt, justify every design decision, and demonstrate full understanding of the implementation.
+
+### Declaration
+I confirm that:
+- All GenAI usage has been declared above
+- I understand every line of code in this submission
+- I can explain and justify all design decisions
+- GenAI use complies with the University of Leeds academic integrity guidelines for this Green Category assessment
+
+---
