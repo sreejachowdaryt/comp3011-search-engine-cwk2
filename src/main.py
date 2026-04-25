@@ -64,9 +64,10 @@ def main():
             if index is None:
                 print("No index loaded. Use 'build' or 'load' first.")
             elif len(parts) < 2:
-                print("Usage: print <word>")
+                print("Usage: print <word> [word2] [word3]...")
             else:
-                print_index_entry(index, parts[1])
+                for word in parts[1:]:
+                    print_index_entry(index, word)
 
         elif command == "find":
             if index is None:

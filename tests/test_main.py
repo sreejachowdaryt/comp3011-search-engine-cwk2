@@ -145,6 +145,18 @@ def test_main_find_missing_query_argument(tmp_path):
         with patch("src.main.INDEX_PATH", filepath):
             main()
 
+def test_main_print_multiple_words(tmp_path):
+    index = {
+        "hello": {"https://example.com": {"frequency": 1, "positions": [0], "tf_idf": 0.5}},
+        "world": {"https://example.com": {"frequency": 2, "positions": [1, 5], "tf_idf": 0.3}},
+    }
+    filepath = str(tmp_path / "index.json")
+    with open(filepath, "w") as f:
+        json.dump(index, f)
+    inputs = iter(["load", "print hello world", "quit"])
+    with patch("builtins.input", side_effect=inputs):
+        with patch("src.main.INDEX_PATH", filepath):
+            main()
 
 def test_main_keyboard_interrupt():
     with patch("builtins.input", side_effect=KeyboardInterrupt):
