@@ -8,9 +8,9 @@ A command-line search engine that crawls, indexes, and searches the quotes.toscr
 
 This tool works in three stages:
 
-1. **Crawl** — visits every page of quotes.toscrape.com automatically
-2. **Index** — builds an inverted index storing each word's frequency, position, and TF-IDF score across all pages
-3. **Search** — lets the user find pages containing one or more search terms, ranked by relevance
+1. **Crawl** - visits every page of quotes.toscrape.com automatically
+2. **Index** - builds an inverted index storing each word's frequency, position, and TF-IDF score across all pages
+3. **Search** - lets the user find pages containing one or more search terms, ranked by relevance
 
 ---
 
@@ -72,16 +72,16 @@ python -m src.main
 ### Available Commands (shell)
 
 
-**build** — Crawls the website, builds the inverted index, and saves it to data/index.json.
+1. **build** - Crawls the website, builds the inverted index, and saves it to data/index.json.
 Note: this takes approximately 5 minutes due to the mandatory 6-second politeness window between requests.
 
-**load** — Loads a previously built index from disk. This is used to avoid re-crawling.
+2. **load** - Loads a previously built index from disk. This is used to avoid re-crawling.
 
-**print** — Displays the full index entry for a specific word, including frequency, positions, and TF-IDF score across all pages.
+3. **print** - Displays the full index entry for a specific word, including frequency, positions, and TF-IDF score across all pages.
 
-**find** — Searches the index for pages containing all query terms, ranked by TF-IDF score.
+4. **find** - Searches the index for pages containing all query terms, ranked by TF-IDF score.
 
-**quit** — Exits the search tool.
+5. **quit** - Exits the search tool.
 
 ---
 
@@ -89,7 +89,6 @@ Note: this takes approximately 5 minutes due to the mandatory 6-second politenes
 
 ### Avaliable commands
 Search Engine ready. Commands: build | load | print <word> | find <query> | quit               
-------------------------------------------------------------
 
 ### load commad
 > load 
@@ -101,7 +100,6 @@ For single word print
 > print nonsense 
 
 Index entry for 'nonsense':
-----------------------------------------
   URL: https://quotes.toscrape.com/tag/life/page/1/
     Frequency : 1
     Positions : [490]
@@ -126,14 +124,12 @@ Index entry for 'nonsense':
     Frequency : 1
     Positions : [324]
     TF-IDF    : 0.008124
-----------------------------------------
 > 
 
 For multi-word print 
 > print nonsense crazy
 
 Index entry for 'nonsense':
-----------------------------------------
   URL: https://quotes.toscrape.com/tag/life/page/1/
     Frequency : 1
     Positions : [490]
@@ -158,10 +154,8 @@ Index entry for 'nonsense':
     Frequency : 1
     Positions : [324]
     TF-IDF    : 0.008124
-----------------------------------------
 
 Index entry for 'crazy':
-----------------------------------------
   URL: https://quotes.toscrape.com/tag/humor/page/1/
     Frequency : 1
     Positions : [172]
@@ -174,7 +168,6 @@ Index entry for 'crazy':
     Frequency : 1
     Positions : [37]
     TF-IDF    : 0.012283
-----------------------------------------
 > 
 
 ### find command
@@ -245,32 +238,32 @@ Goodbye!
 ## Edge Cases
 
 ### When index is not loaded 
-> print good
+> print good       
 No index loaded. Use 'build' or 'load' first.
 > 
 
 ### Unknown command
-> search love
+> search love        
 Unknown command: 'search'. Try: build | load | print | find | quit
 >
 
 ### Empty query for print 
-> print
+> print         
 Usage: print <word> [word2] [word3]...
 >
 
 ### Empty query for find 
-> find
+> find        
 Usage: find <query>
 >
 
 ### non-existent word print 
-> print thisisnotaword
+> print thisisnotaword         
 'thisisnotaword' not found in index.
 >
 
 ### non-existent word find 
-> find thisisnotaword
+> find thisisnotaword           
 'thisisnotaword' not found in index.
 > 
 
@@ -312,7 +305,7 @@ Found 3 page(s):
 > 
 
 ### AND logic -> 0
-> find best friends forever
+> find best friends forever          
 No pages found containing all search terms.
 > 
 
