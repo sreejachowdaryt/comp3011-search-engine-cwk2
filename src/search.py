@@ -1,6 +1,27 @@
 # search.py - Query processing and search logic
 
 from src.indexer import tokenize
+import difflib
+
+
+def suggest_word(word: str, index: dict) -> str | None:
+    """
+    Suggests the closest matching word in the index.
+    Used when a search term is not found.
+
+    Args:
+        word (str): The word that wasn't found
+        index (dict): The inverted index to search against
+
+    Returns:
+        str | None: The closest match, or None if no good match found
+
+    Time complexity:  O(v) where v = vocabulary size
+
+    Space complexity: O(1)
+    """
+    matches = difflib.get_close_matches(word, index.keys(), n=1, cutoff=0.75)
+    return matches[0] if matches else None
 
 
 def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
@@ -35,7 +56,11 @@ def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
 
     for word in words:
         if word not in index:
-            print(f"'{word}' not found in index.")
+            suggestion = suggest_word(word, index)
+            if suggestion:
+                print(f"'{word}' not found in index. Did you mean '{suggestion}'?")
+            else:
+                print(f"'{word}' not found in index.")
             return []
         pages_with_word = set(index[word].keys())
         if matching_urls is None:
@@ -68,9 +93,8 @@ def print_index_entry(index: dict, word: str) -> None:
     Args:
         index (dict): The inverted index
         word (str): The word to look up
-    
+
     Time complexity:  O(p) where p = number of pages containing the word
-    
     Space complexity: O(1) — prints directly, no additional storage
     """
     word = word.lower().strip()
@@ -80,7 +104,11 @@ def print_index_entry(index: dict, word: str) -> None:
         return
 
     if word not in index:
-        print(f"'{word}' not found in index.")
+        suggestion = suggest_word(word, index)
+        if suggestion:
+            print(f"'{word}' not found in index. Did you mean '{suggestion}'?")
+        else:
+            print(f"'{word}' not found in index.")
         return
 
     print(f"\nIndex entry for '{word}':")
