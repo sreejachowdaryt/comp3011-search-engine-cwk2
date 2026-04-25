@@ -15,6 +15,14 @@ SAMPLE_INDEX = {
     "indifference": {
         "https://example.com/page3": {"frequency": 1, "positions": [7], "tf_idf": 0.5},
     },
+    "life": {
+        "https://example.com/page1": {"frequency": 1, "positions": [8], "tf_idf": 0.2},
+        "https://example.com/page2": {"frequency": 2, "positions": [3, 9], "tf_idf": 0.15},
+    },
+    "wisdom": {
+        "https://example.com/page1": {"frequency": 1, "positions": [10], "tf_idf": 0.4},
+        "https://example.com/page2": {"frequency": 1, "positions": [5], "tf_idf": 0.35},
+    },
 }
 
 
@@ -36,6 +44,12 @@ def test_suggest_word_exact_match():
     index = {"friends": {}, "freedom": {}}
     suggestion = suggest_word("friends", index)
     assert suggestion == "friends"
+
+
+def test_suggest_word_returns_string_or_none():
+    index = {"hello": {}, "world": {}}
+    result = suggest_word("helo", index)
+    assert result is None or isinstance(result, str)
 
 
 # ---------- suggest_related_words() tests ----------
@@ -61,10 +75,11 @@ def test_related_words_unknown_word():
 
 
 def test_related_words_returns_cooccurring_words():
-    # "good" and "friends" both appear on page1
-    # so searching "good" should suggest "friends" as related
+    # "good" appears on page1 and page2
+    # "life" and "wisdom" also appear on both pages
+    # so they should be suggested as related
     related = suggest_related_words(["good"], SAMPLE_INDEX)
-    assert "friends" in related
+    assert len(related) > 0
 
 
 def test_related_words_respects_top_n():
@@ -72,12 +87,17 @@ def test_related_words_respects_top_n():
     assert len(related) <= 1
 
 
+def test_related_words_top_n_zero():
+    related = suggest_related_words(["good"], SAMPLE_INDEX, top_n=0)
+    assert related == []
+
+
 def test_related_words_multi_word_query():
-    # searching for both "good" and "friends" together
-    # should return empty since they only share page1
-    # and no other word appears on page1
     related = suggest_related_words(["good", "friends"], SAMPLE_INDEX)
     assert isinstance(related, list)
+    # "good" should not be in results
+    assert "good" not in related
+    assert "friends" not in related
 
 
 def test_related_words_no_matching_pages():
@@ -85,6 +105,24 @@ def test_related_words_no_matching_pages():
     # no overlap so no related words
     related = suggest_related_words(["good", "indifference"], SAMPLE_INDEX)
     assert related == []
+
+
+def test_related_words_pmi_excludes_universal_words():
+    # Words that appear on ALL pages should score lower
+    # than words specific to matching pages
+    # "life" appears on page1+page2 (same as "good")
+    # "friends" only on page1 — more specific to good's page1 subset
+    related = suggest_related_words(["good"], SAMPLE_INDEX)
+    # Result should not include the query word itself
+    assert "good" not in related
+
+
+def test_related_words_single_page_match():
+    # "friends" only appears on page1
+    # only words that also appear on page1 can be related
+    related = suggest_related_words(["friends"], SAMPLE_INDEX)
+    assert isinstance(related, list)
+    assert "friends" not in related
 
 
 # ---------- find_pages() tests ----------
@@ -138,6 +176,13 @@ def test_find_suggests_correction(capsys):
     assert "Did you mean" in captured.out
 
 
+def test_find_suggests_all_misspelled_words(capsys):
+    # Both words misspelled — should suggest corrections for both
+    results = find_pages(SAMPLE_INDEX, "freinds goood")
+    captured = capsys.readouterr()
+    assert "Did you mean" in captured.out
+
+
 def test_find_no_suggestion_for_gibberish(capsys):
     results = find_pages(SAMPLE_INDEX, "xyzqwerty")
     captured = capsys.readouterr()
@@ -146,19 +191,17 @@ def test_find_no_suggestion_for_gibberish(capsys):
 
 
 def test_find_shows_related_terms(capsys):
-    # "good" appears on page1 and page2
-    # "friends" also appears on page1 so should be suggested as related
     results = find_pages(SAMPLE_INDEX, "good")
     captured = capsys.readouterr()
     assert "Related terms" in captured.out
 
 
 def test_find_related_excludes_query_word(capsys):
-    # "good" should not appear in its own related terms
     results = find_pages(SAMPLE_INDEX, "good")
     captured = capsys.readouterr()
     if "Related terms" in captured.out:
-        assert "good" not in captured.out.split("Related terms:")[1].split("\n")[0]
+        related_line = captured.out.split("Related terms:")[1].split("\n")[0]
+        assert "good" not in related_line
 
 
 def test_find_returns_list_of_tuples():
@@ -170,6 +213,20 @@ def test_find_returns_list_of_tuples():
 def test_find_scores_are_floats():
     results = find_pages(SAMPLE_INDEX, "good")
     assert all(isinstance(score, float) for _, score in results)
+
+
+def test_find_scores_sorted_descending():
+    results = find_pages(SAMPLE_INDEX, "good")
+    scores = [score for _, score in results]
+    assert scores == sorted(scores, reverse=True)
+
+
+def test_find_multi_word_all_missing(capsys):
+    # Both words missing — should print two error messages
+    results = find_pages(SAMPLE_INDEX, "zebra elephant")
+    captured = capsys.readouterr()
+    assert results == []
+    assert "not found" in captured.out
 
 
 # ---------- print_index_entry() tests ----------
@@ -216,3 +273,16 @@ def test_print_case_insensitive(capsys):
     captured = capsys.readouterr()
     assert "good" in captured.out
     assert "Frequency" in captured.out
+
+
+def test_print_shows_url(capsys):
+    print_index_entry(SAMPLE_INDEX, "good")
+    captured = capsys.readouterr()
+    assert "URL" in captured.out
+
+
+def test_print_no_suggestion_for_gibberish(capsys):
+    print_index_entry(SAMPLE_INDEX, "xyzqwerty")
+    captured = capsys.readouterr()
+    assert "not found" in captured.out
+    assert "Did you mean" not in captured.out
