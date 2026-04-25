@@ -129,7 +129,7 @@ Index entry for 'nonsense':
 For multi-word print 
 > print nonsense crazy
 
-Index entry for 'nonsense':
+Index entry for 'nonsense':                   
   URL: https://quotes.toscrape.com/tag/life/page/1/       
     Frequency : 1          
     Positions : [490]        
@@ -155,7 +155,7 @@ Index entry for 'nonsense':
     Positions : [324]              
     TF-IDF    : 0.008124               
 
-Index entry for 'crazy':
+Index entry for 'crazy':                        
   URL: https://quotes.toscrape.com/tag/humor/page/1/         
     Frequency : 1        
     Positions : [172]           
