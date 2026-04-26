@@ -29,7 +29,7 @@ def suggest_related_words(query_words: list[str], index: dict, top_n: int = 5) -
     scoring. Words that co-occur with the query AND are specific to those
     pages (not universal) score highest.
 
-    Score = (pages_with_word_on_matching / total_matching) 
+    Score = (pages_with_word_on_matching / total_matching)
             / (total_pages_with_word / total_pages)
 
     This rewards words that appear disproportionately often on matching
@@ -65,9 +65,8 @@ def suggest_related_words(query_words: list[str], index: dict, top_n: int = 5) -
         return []
 
     total_matching = len(matching_pages)
-    total_pages = len(index[query_words[0]])  # approximate total pages
 
-    # Get a better total pages count from the largest word
+    # Get total pages from the largest word entry
     total_pages = max(len(page_data) for page_data in index.values())
 
     related_scores: dict[str, float] = {}
@@ -91,7 +90,7 @@ def suggest_related_words(query_words: list[str], index: dict, top_n: int = 5) -
         # expected by chance, it's genuinely related
         if p_word > 0:
             pmi_score = p_word_given_match / p_word
-            # Only suggest words that appear on at least 10% of matching pages
+            # Only suggest words that appear on at least 20% of matching pages
             if p_word_given_match >= 0.2:
                 related_scores[word] = pmi_score
 
@@ -101,14 +100,20 @@ def suggest_related_words(query_words: list[str], index: dict, top_n: int = 5) -
 
 def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
     """
-    Finds all pages containing ALL words in the query.
-    Results are ranked by combined TF-IDF score.
-    Suggests corrections for ALL misspelled words before returning.
-    Also displays related terms based on co-occurrence.
+    Finds pages matching the query using AND or OR logic.
+
+    - Default (no operator): AND logic — all words must appear
+    - OR operator: pages containing ANY of the words
+    - AND operator: explicit AND between words (same as default)
+
+    Examples:
+        find love hate        → AND (both words required)
+        find love OR hate     → OR (either word)
+        find good AND friends → AND (explicit, same as default)
 
     Args:
         index (dict): The inverted index
-        query (str): One or more search terms e.g. "good friends"
+        query (str): Search query, optionally with OR/AND operators
 
     Returns:
         list: Sorted list of (url, score) tuples, best match first
@@ -121,7 +126,13 @@ def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
         print("Please enter a search term.")
         return []
 
-    words = tokenize(query)
+    # Detect OR operator before tokenizing
+    raw_parts = query.strip().split()
+    use_or = "OR" in raw_parts
+
+    # Remove operator keywords then tokenize
+    cleaned = query.replace(" OR ", " ").replace(" AND ", " ")
+    words = tokenize(cleaned)
 
     if not words:
         print("No valid search terms found.")
@@ -142,17 +153,26 @@ def find_pages(index: dict, query: str) -> list[tuple[str, float]]:
             print(msg)
         return []
 
-    # Get pages that contain ALL query words (AND logic)
-    matching_urls = None
-    for word in words:
-        pages_with_word = set(index[word].keys())
-        if matching_urls is None:
-            matching_urls = pages_with_word
-        else:
-            matching_urls = matching_urls & pages_with_word
+    if use_or:
+        # OR logic — union of all pages containing ANY word
+        print(f"  Search mode: OR (pages containing any of: {', '.join(words)})")
+        matching_urls: set = set()
+        for word in words:
+            matching_urls = matching_urls | set(index[word].keys())
+    else:
+        # AND logic — intersection of pages containing ALL words
+        if len(words) > 1:
+            print(f"  Search mode: AND (pages containing all of: {', '.join(words)})")
+        matching_urls = None
+        for word in words:
+            pages_with_word = set(index[word].keys())
+            if matching_urls is None:
+                matching_urls = pages_with_word
+            else:
+                matching_urls = matching_urls & pages_with_word
 
     if not matching_urls:
-        print("No pages found containing all search terms.")
+        print("No pages found containing search terms.")
         return []
 
     # Rank by combined TF-IDF score

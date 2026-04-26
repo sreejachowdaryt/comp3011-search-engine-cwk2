@@ -75,9 +75,6 @@ def test_related_words_unknown_word():
 
 
 def test_related_words_returns_cooccurring_words():
-    # "good" appears on page1 and page2
-    # "life" and "wisdom" also appear on both pages
-    # so they should be suggested as related
     related = suggest_related_words(["good"], SAMPLE_INDEX)
     assert len(related) > 0
 
@@ -95,37 +92,27 @@ def test_related_words_top_n_zero():
 def test_related_words_multi_word_query():
     related = suggest_related_words(["good", "friends"], SAMPLE_INDEX)
     assert isinstance(related, list)
-    # "good" should not be in results
     assert "good" not in related
     assert "friends" not in related
 
 
 def test_related_words_no_matching_pages():
-    # "good" is on page1/page2, "indifference" is on page3
-    # no overlap so no related words
     related = suggest_related_words(["good", "indifference"], SAMPLE_INDEX)
     assert related == []
 
 
 def test_related_words_pmi_excludes_universal_words():
-    # Words that appear on ALL pages should score lower
-    # than words specific to matching pages
-    # "life" appears on page1+page2 (same as "good")
-    # "friends" only on page1 — more specific to good's page1 subset
     related = suggest_related_words(["good"], SAMPLE_INDEX)
-    # Result should not include the query word itself
     assert "good" not in related
 
 
 def test_related_words_single_page_match():
-    # "friends" only appears on page1
-    # only words that also appear on page1 can be related
     related = suggest_related_words(["friends"], SAMPLE_INDEX)
     assert isinstance(related, list)
     assert "friends" not in related
 
 
-# ---------- find_pages() tests ----------
+# ---------- find_pages() AND logic tests ----------
 
 def test_find_single_word():
     results = find_pages(SAMPLE_INDEX, "indifference")
@@ -177,7 +164,6 @@ def test_find_suggests_correction(capsys):
 
 
 def test_find_suggests_all_misspelled_words(capsys):
-    # Both words misspelled — should suggest corrections for both
     results = find_pages(SAMPLE_INDEX, "freinds goood")
     captured = capsys.readouterr()
     assert "Did you mean" in captured.out
@@ -222,11 +208,93 @@ def test_find_scores_sorted_descending():
 
 
 def test_find_multi_word_all_missing(capsys):
-    # Both words missing — should print two error messages
     results = find_pages(SAMPLE_INDEX, "zebra elephant")
     captured = capsys.readouterr()
     assert results == []
     assert "not found" in captured.out
+
+
+def test_find_explicit_and_operator():
+    # Explicit uppercase AND behaves same as default AND
+    and_explicit = find_pages(SAMPLE_INDEX, "good AND friends")
+    and_default = find_pages(SAMPLE_INDEX, "good friends")
+    assert len(and_explicit) == len(and_default)
+
+
+def test_find_lowercase_and_treated_as_search_term():
+    # lowercase "and" is treated as a search word not an operator
+    # "and" is not in SAMPLE_INDEX so should return empty
+    results = find_pages(SAMPLE_INDEX, "good and friends")
+    assert results == []
+
+
+# ---------- find_pages() OR logic tests ----------
+
+def test_find_or_logic_returns_union():
+    # OR should return pages with EITHER word
+    results = find_pages(SAMPLE_INDEX, "good OR indifference")
+    urls = [r[0] for r in results]
+    # page3 has indifference, page1/page2 have good
+    assert "https://example.com/page3" in urls
+    assert "https://example.com/page1" in urls
+
+
+def test_find_or_more_results_than_and():
+    # OR should return more or equal pages than AND
+    and_results = find_pages(SAMPLE_INDEX, "good friends")
+    or_results = find_pages(SAMPLE_INDEX, "good OR friends")
+    assert len(or_results) >= len(and_results)
+
+
+def test_find_or_shows_search_mode(capsys):
+    find_pages(SAMPLE_INDEX, "good OR indifference")
+    captured = capsys.readouterr()
+    assert "OR" in captured.out
+
+
+def test_find_or_includes_pages_from_both_words():
+    # good is on page1 and page2
+    # indifference is on page3
+    # OR should include all three pages
+    results = find_pages(SAMPLE_INDEX, "good OR indifference")
+    urls = [r[0] for r in results]
+    assert "https://example.com/page1" in urls
+    assert "https://example.com/page2" in urls
+    assert "https://example.com/page3" in urls
+
+
+def test_find_lowercase_or_treated_as_search_term():
+    # lowercase "or" is a search term not an operator
+    # "or" is not in SAMPLE_INDEX so returns empty
+    results = find_pages(SAMPLE_INDEX, "good or friends")
+    assert results == []
+
+
+def test_find_or_single_word_same_as_normal():
+    # OR with one word behaves like normal search
+    normal = find_pages(SAMPLE_INDEX, "good")
+    # No OR detected since no operator present
+    assert len(normal) > 0
+
+
+def test_find_or_missing_word(capsys):
+    # OR search where one word doesn't exist
+    results = find_pages(SAMPLE_INDEX, "good OR zebra")
+    captured = capsys.readouterr()
+    assert results == []
+    assert "not found" in captured.out
+
+
+def test_find_or_returns_ranked_results():
+    results = find_pages(SAMPLE_INDEX, "good OR indifference")
+    scores = [score for _, score in results]
+    assert scores == sorted(scores, reverse=True)
+
+
+def test_find_or_returns_list_of_tuples():
+    results = find_pages(SAMPLE_INDEX, "good OR indifference")
+    assert all(isinstance(r, tuple) for r in results)
+    assert all(len(r) == 2 for r in results)
 
 
 # ---------- print_index_entry() tests ----------
