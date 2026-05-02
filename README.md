@@ -86,15 +86,15 @@ Note: this takes approximately 5 minutes due to the mandatory 6-second politenes
 
 3. **print \<word\> [word2] [word3]...** — Displays the full index entry for one or more words sequentially, including frequency, positions, and TF-IDF score across all pages.
 
-> print indifference (single word print)
-print good friends (multi-word print)
-
+> print indifference (single word print)         
+print good friends (multi-word print)                     
+ 
 4. **find \<query\>** — Searches the index for pages containing query terms, ranked by TF-IDF score. Supports AND/OR Boolean operators, spell suggestions, and related terms.
 
-> find indiffernece (single word query)
-find good friends (multi-word query)
-find love OR hate (OR logic)
-find good AND friends (AND logic)
+> find indiffernece (single word query)            
+find good friends (multi-word query)                         
+find love OR hate (OR logic)                             
+find good AND friends (AND logic)                        
 
 5. **quit** - Exits the search tool.
 
@@ -107,37 +107,37 @@ find good AND friends (AND logic)
 ### Boolean Operators
 Operators must be **uppercase** following Boolean query syntax convention (same as Google and Elasticsearch). Lowercase `or`/`and` are treated as regular search terms.
 
-> find love OR hate  → OR logic: pages containing either word
-find love AND hate → AND logic: pages containing both words
-find good friends → AND logic: default behaviour
-find love or hate → AND logic: searches for "love", "or", "hate"
-find love and hate → AND logic: searches for "love", "and", "hate"
+> find love OR hate  → OR logic: pages containing either word          
+find love AND hate → AND logic: pages containing both words         
+find good friends → AND logic: default behaviour          
+find love or hate → AND logic: searches for "love", "or", "hate"          
+find love and hate → AND logic: searches for "love", "and", "hate"        
 
 ### Spell correction 
 When a word is not found, the closest match is suggested using edit distance:
 
-> find freinds
-'freinds' not found in index. Did you mean 'friends'?
+> find freinds                      
+'freinds' not found in index. Did you mean 'friends'?                  
 
-> find loev freinds
-'loev' not found in index. Did you mean 'love'?
-'freinds' not found in index. Did you mean 'friends'?
+> find loev freinds                   
+'loev' not found in index. Did you mean 'love'?               
+'freinds' not found in index. Did you mean 'friends'?                
 
 ### Related Terms
 After a successful search, related terms are suggested using PMI (Pointwise Mutual Information) scoring — words that appear disproportionately often on the same pages as your query:
 
-> find books
-Related terms: book, written, lives, write, reading
-Found 61 page(s)...
+> find books                      
+Related terms: book, written, lives, write, reading                    
+Found 61 page(s)...                        
 
 ### Query Benchmarking 
 All commands display execution time (execution time has minor changes during every new execution/run):
 
-> find love OR hate
-Found 56 page(s) in 0.0117s
+> find love OR hate                          
+Found 56 page(s) in 0.0117s                              
 
-> print indifference
-Query completed in 0.0022s
+> print indifference                 
+Query completed in 0.0022s                     
 
 ---
 
@@ -147,9 +147,9 @@ Query completed in 0.0022s
 Search Engine ready. Commands: build | load | print <word> | find <query> | quit               
 
 ### 1. load 
-> load       
-Index loaded from data/index.json (4253 words)
-Load completed in 0.0695s
+> load                
+Index loaded from data/index.json (4253 words)                         
+Load completed in 0.0695s                
 
 ### 2. print 
 
@@ -185,8 +185,8 @@ Index entry for 'nonsense':
 > 
 
 Print for multiple words
-> print nonsense crazy
-first prints nonsense and then prints for crazy
+> print nonsense crazy                      
+first prints nonsense and then prints for crazy                    
 
 Index entry for 'nonsense':                   
   URL: https://quotes.toscrape.com/tag/life/page/1/       
@@ -233,8 +233,8 @@ Index entry for 'crazy':
 ### 3. find 
 
 For single word query
-> find indifference  
-  Related terms: opposite, art, ugliness, heresy, apathy
+> find indifference                            
+  Related terms: opposite, art, ugliness, heresy, apathy             
 
 Found 11 page(s) in 0.0059s:
   1. https://quotes.toscrape.com/tag/indifference/page/1/  (score: 0.20337)
@@ -244,9 +244,9 @@ Found 11 page(s) in 0.0059s:
 > 
 
 For multi-word query
-> find good friends
-  Search mode: AND (pages containing all of: good, friends)
-  Related terms: mess, decide, stay, lovers, actually
+> find good friends             
+  Search mode: AND (pages containing all of: good, friends)          
+  Related terms: mess, decide, stay, lovers, actually            
 
 Found 19 page(s) in 0.0317s:
   1. https://quotes.toscrape.com/tag/contentment/page/1/  (score: 0.381029)
@@ -256,9 +256,9 @@ Found 19 page(s) in 0.0317s:
 > 
 
 Find for OR Boolean Operator
-> find love OR hate
-  Search mode: OR (pages containing any of: love, hate)
-  Related terms: mess, decide, stay, lovers, actually
+> find love OR hate               
+  Search mode: OR (pages containing any of: love, hate)             
+  Related terms: mess, decide, stay, lovers, actually              
 
 Found 56 page(s) in 0.0089s:
   1. https://quotes.toscrape.com/tag/women/page/1/  (score: 0.156766)
@@ -266,9 +266,9 @@ Found 56 page(s) in 0.0089s:
 >
 
 Find for AND Boolean Operator
-> find love AND hate 
-  Search mode: AND (pages containing all of: love, hate)
-  Related terms: mess, decide, stay, lovers, actually
+> find love AND hate              
+  Search mode: AND (pages containing all of: love, hate)         
+  Related terms: mess, decide, stay, lovers, actually             
 
 Found 19 page(s) in 0.0076s:
   1. https://quotes.toscrape.com/tag/humor/page/2/  (score: 0.154899)
@@ -276,8 +276,8 @@ Found 19 page(s) in 0.0076s:
 >
 
 ### quit 
-> quit                
-Goodbye!
+> quit                      
+Goodbye!                          
 
 ---
 
@@ -303,20 +303,20 @@ Usage: find <query>
 >
 
 ### 4. non-existent word in index
-> print thisisnotaaword
-'thisisnotaaword' not found in index.
-  Query completed in 0.0066s
+> print thisisnotaaword             
+'thisisnotaaword' not found in index.                 
+  Query completed in 0.0066s              
 > 
  
-> find thisisnotaword
-'thisisnotaword' not found in index.
-  Query completed in 0.0104s
+> find thisisnotaword                     
+'thisisnotaword' not found in index.              
+  Query completed in 0.0104s                           
 >  
 
 ### 5. Case insensitivity 
 All words lowercase 
-> find crazy
-  Related terms: horrible, question, low, oh, beholder          
+> find crazy                 
+  Related terms: horrible, question, low, oh, beholder                   
 
 Found 3 page(s) in 0.0051s:                
   1. https://quotes.toscrape.com/tag/humor/page/1/  (score: 0.016792)     
@@ -325,8 +325,8 @@ Found 3 page(s) in 0.0051s:
 >
 
 All words uppercase
-> find CRAZY
-  Related terms: horrible, question, low, oh, beholder
+> find CRAZY               
+  Related terms: horrible, question, low, oh, beholder           
 
 Found 3 page(s) in 0.0058s:                
   1. https://quotes.toscrape.com/tag/humor/page/1/  (score: 0.016792)      
@@ -335,7 +335,7 @@ Found 3 page(s) in 0.0058s:
 >
 
 Mix of uppercase and lowercase in the word   
-> find CrAzY       
+> find CrAzY              
   Related terms: horrible, question, low, oh, beholder          
 
 Found 3 page(s) in 0.0049s:         
@@ -389,9 +389,7 @@ Spell Correction
 Related Terms                 
 > find books                
   Related terms: book, written, lives, write, reading                   
-
 Found 61 page(s) in 0.0142s:                 
->
 
 --- 
 
