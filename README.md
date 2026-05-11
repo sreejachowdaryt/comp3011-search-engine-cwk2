@@ -87,7 +87,7 @@ Note: this takes approximately 5 minutes due to the mandatory 6-second politenes
 3. **print \<word\> [word2] [word3]...** — Displays the full index entry for one or more words sequentially, including frequency, positions, and TF-IDF score across all pages.
 
 > print indifference (single word print)         
-print good friends (multi-word print)                     
+print crazy passion (multi-word print)                     
  
 4. **find \<query\>** — Searches the index for pages containing query terms, ranked by TF-IDF score. Supports AND/OR Boolean operators, spell suggestions, and related terms.
 
